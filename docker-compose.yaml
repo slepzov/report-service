@@ -1,0 +1,34 @@
+version: '3.7'
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  report_service_rabbitmq_volume:
+
+services:
+  rabbitmq:
+    image: "rabbitmq:4.0.3-management-alpine"
+    volumes:
+      - report_service_rabbitmq_volume:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build: .
+    command: python3 main.py
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file: .env
