@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.9'
 
 networks:
   backend:
@@ -31,4 +31,3 @@ services:
         condition: service_healthy
     networks:
       - backend
-    env_file: .env
